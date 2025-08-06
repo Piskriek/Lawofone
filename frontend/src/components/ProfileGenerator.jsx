@@ -5,12 +5,14 @@ import DescriptionPanel from './DescriptionPanel';
 import ChakraVisualization from './ChakraVisualization';
 import OverallMetrics from './OverallMetrics';
 import ProfileHistory from './ProfileHistory';
+import ChakraQuestionnaire from './ChakraQuestionnaire';
 import { generateProfile } from '../services/api';
-import { Loader2, Save, History } from 'lucide-react';
+import { Loader2, Save, History, RotateCcw } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
 
 const ProfileGenerator = () => {
+  const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [energyCenters, setEnergyCenters] = useState({
     root: { frequency: 50, balance: 50, blockage: 30 },
     sacral: { frequency: 50, balance: 50, blockage: 30 },
@@ -86,6 +88,30 @@ const ProfileGenerator = () => {
     }
   ];
 
+  const handleQuestionnaireComplete = (initialValues) => {
+    setEnergyCenters(initialValues);
+    setShowQuestionnaire(false);
+    
+    toast({
+      title: "Assessment Complete!",
+      description: "Your personalized chakra values have been set based on your responses.",
+    });
+  };
+
+  const handleSkipQuestionnaire = () => {
+    setShowQuestionnaire(false);
+    
+    toast({
+      title: "Using Default Values",
+      description: "Starting with balanced chakra values. You can adjust them as needed.",
+    });
+  };
+
+  const resetToQuestionnaire = () => {
+    setShowQuestionnaire(true);
+    setProfile(null);
+  };
+
   const updateEnergyCenter = (chakraKey, attribute, value) => {
     setEnergyCenters(prev => ({
       ...prev,
@@ -98,12 +124,14 @@ const ProfileGenerator = () => {
 
   // Debounced profile generation
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      generateNewProfile();
-    }, 500); // 500ms delay
+    if (!showQuestionnaire) {
+      const timeoutId = setTimeout(() => {
+        generateNewProfile();
+      }, 500); // 500ms delay
 
-    return () => clearTimeout(timeoutId);
-  }, [energyCenters]);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [energyCenters, showQuestionnaire]);
 
   const generateNewProfile = async () => {
     try {
@@ -147,6 +175,17 @@ const ProfileGenerator = () => {
     }
   };
 
+  // Show questionnaire
+  if (showQuestionnaire) {
+    return (
+      <ChakraQuestionnaire
+        onComplete={handleQuestionnaireComplete}
+        onSkip={handleSkipQuestionnaire}
+      />
+    );
+  }
+
+  // Show history
   if (showHistory) {
     return (
       <ProfileHistory 
@@ -172,7 +211,7 @@ const ProfileGenerator = () => {
         </p>
         
         {/* Action Buttons */}
-        <div className="flex gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center">
           <Button 
             onClick={saveProfile} 
             disabled={loading || !profile}
@@ -192,6 +231,14 @@ const ProfileGenerator = () => {
           >
             <History className="w-4 h-4" />
             View History
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={resetToQuestionnaire}
+            className="flex items-center gap-2"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Retake Assessment
           </Button>
         </div>
       </div>
