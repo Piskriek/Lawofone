@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the Law of One Profile Generator backend API thoroughly including health check, profile generation, profile history, profile retrieval, session stats, data validation, and MongoDB integration."
+user_problem_statement: "Test the complete Law of One Profile Generator frontend application thoroughly including chakra assessment questionnaire, main profile generator, profile management, visual elements, error handling, and full user journey integration."
 
 backend:
   - task: "API Health Check"
