@@ -188,6 +188,9 @@ async def get_profile_by_id(profile_id: str):
             "profile": profile
         }
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
         logging.error(f"Error fetching profile: {str(e)}")
         raise HTTPException(status_code=500, detail="Error fetching profile")
