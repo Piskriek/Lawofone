@@ -4,7 +4,11 @@ import EnergyCenter from './EnergyCenter';
 import DescriptionPanel from './DescriptionPanel';
 import ChakraVisualization from './ChakraVisualization';
 import OverallMetrics from './OverallMetrics';
-import { generateProfile } from '../data/mock';
+import ProfileHistory from './ProfileHistory';
+import { generateProfile } from '../services/api';
+import { Loader2, Save, History } from 'lucide-react';
+import { Button } from './ui/button';
+import { useToast } from '../hooks/use-toast';
 
 const ProfileGenerator = () => {
   const [energyCenters, setEnergyCenters] = useState({
@@ -18,6 +22,10 @@ const ProfileGenerator = () => {
   });
 
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const { toast } = useToast();
 
   const chakraData = [
     { 
@@ -88,10 +96,69 @@ const ProfileGenerator = () => {
     }));
   };
 
+  // Debounced profile generation
   useEffect(() => {
-    const newProfile = generateProfile(energyCenters);
-    setProfile(newProfile);
+    const timeoutId = setTimeout(() => {
+      generateNewProfile();
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timeoutId);
   }, [energyCenters]);
+
+  const generateNewProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const newProfile = await generateProfile(energyCenters);
+      setProfile(newProfile);
+      
+    } catch (err) {
+      setError('Failed to generate profile. Please try again.');
+      console.error('Profile generation error:', err);
+      
+      toast({
+        title: "Error",
+        description: "Failed to generate your spiritual profile. Please check your connection.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveProfile = async () => {
+    try {
+      setLoading(true);
+      await generateProfile(energyCenters);
+      
+      toast({
+        title: "Profile Saved",
+        description: "Your spiritual profile has been saved successfully.",
+      });
+    } catch (err) {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (showHistory) {
+    return (
+      <ProfileHistory 
+        onBack={() => setShowHistory(false)}
+        onLoadProfile={(profileData) => {
+          setEnergyCenters(profileData.energyCenters);
+          setProfile(profileData.generatedProfile);
+          setShowHistory(false);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -100,10 +167,43 @@ const ProfileGenerator = () => {
         <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
           Law of One Profile Generator
         </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6">
           Adjust your energy centers to discover your spiritual profile and receive personalized guidance for balance and growth.
         </p>
+        
+        {/* Action Buttons */}
+        <div className="flex gap-4 justify-center">
+          <Button 
+            onClick={saveProfile} 
+            disabled={loading || !profile}
+            className="flex items-center gap-2"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            Save Profile
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowHistory(true)}
+            className="flex items-center gap-2"
+          >
+            <History className="w-4 h-4" />
+            View History
+          </Button>
+        </div>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        </div>
+      )}
 
       {/* Overall Metrics Dashboard */}
       <div className="max-w-7xl mx-auto mb-12">
@@ -129,8 +229,9 @@ const ProfileGenerator = () => {
         <div className="xl:col-span-1 space-y-4">
           <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl text-center text-gray-800">
+              <CardTitle className="text-xl text-center text-gray-800 flex items-center justify-center gap-2">
                 Adjust Your Energy Centers
+                {loading && <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -145,6 +246,7 @@ const ProfileGenerator = () => {
                   description={chakra.description}
                   values={energyCenters[chakra.key]}
                   onUpdate={updateEnergyCenter}
+                  disabled={loading}
                 />
               ))}
             </CardContent>
@@ -154,7 +256,7 @@ const ProfileGenerator = () => {
         {/* Description Panel */}
         <div className="xl:col-span-1">
           <div className="sticky top-4">
-            <DescriptionPanel profile={profile} />
+            <DescriptionPanel profile={profile} loading={loading} />
           </div>
         </div>
       </div>
@@ -163,7 +265,7 @@ const ProfileGenerator = () => {
       <footer className="mt-20 text-center text-gray-500 text-sm">
         <div className="max-w-2xl mx-auto">
           <p className="mb-2">Based on the spiritual teachings of the Law of One material</p>
-          <p className="text-xs">Adjust your energy centers mindfully and observe how your profile evolves</p>
+          <p className="text-xs">Your profiles are automatically saved and can be accessed from your history</p>
         </div>
       </footer>
     </div>

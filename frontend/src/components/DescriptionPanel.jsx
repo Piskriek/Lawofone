@@ -2,16 +2,29 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Heart, Brain, Sparkles, Target } from 'lucide-react';
+import { Heart, Brain, Sparkles, Target, Loader2 } from 'lucide-react';
 
-const DescriptionPanel = ({ profile }) => {
-  if (!profile) {
+const DescriptionPanel = ({ profile, loading = false }) => {
+  if (loading) {
     return (
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardContent className="p-8 text-center">
           <div className="animate-pulse">
-            <Sparkles className="w-12 h-12 mx-auto text-indigo-400 mb-4" />
+            <Loader2 className="w-12 h-12 mx-auto text-indigo-400 mb-4 animate-spin" />
             <p className="text-gray-600">Generating your spiritual profile...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <CardContent className="p-8 text-center">
+          <div>
+            <Sparkles className="w-12 h-12 mx-auto text-indigo-400 mb-4" />
+            <p className="text-gray-600">Adjust your energy centers to see your spiritual profile</p>
           </div>
         </CardContent>
       </Card>
