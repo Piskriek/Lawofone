@@ -348,7 +348,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All backend API endpoints tested and working"
+    - "Chakra Assessment Questionnaire"
+    - "Main Profile Generator"
+    - "Energy Center Sliders"
+    - "Chakra Visualization"
+    - "Profile Management"
+    - "API Integration"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
