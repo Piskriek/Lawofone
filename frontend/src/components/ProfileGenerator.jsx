@@ -216,6 +216,7 @@ const ProfileGenerator = () => {
             onClick={saveProfile} 
             disabled={loading || !profile}
             className="flex items-center gap-2"
+            title="Save your current spiritual profile to your history"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -228,6 +229,7 @@ const ProfileGenerator = () => {
             variant="outline"
             onClick={() => setShowHistory(true)}
             className="flex items-center gap-2"
+            title="View your past saved spiritual profiles"
           >
             <History className="w-4 h-4" />
             View History
@@ -236,6 +238,7 @@ const ProfileGenerator = () => {
             variant="outline"
             onClick={resetToQuestionnaire}
             className="flex items-center gap-2"
+            title="Go back to the questionnaire to reassess your energy centers"
           >
             <RotateCcw className="w-4 h-4" />
             Retake Assessment
@@ -253,7 +256,7 @@ const ProfileGenerator = () => {
       )}
 
       {/* Overall Metrics Dashboard */}
-      <div className="max-w-7xl mx-auto mb-12">
+      <div className="max-w-7xl mx-auto mt-8 mb-12">
         <OverallMetrics profile={profile} energyCenters={energyCenters} chakraData={chakraData} />
       </div>
 

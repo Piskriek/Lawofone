@@ -43,7 +43,7 @@ const OverallMetrics = ({ profile, energyCenters, chakraData }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-indigo-900 mb-1">{profile.overallLevel}</div>
+          <div className="text-2xl font-bold text-indigo-900 mb-1" title="Represents your overall spiritual development level based on your energy centers.">{profile.overallLevel}</div>
           <Progress value={overallFrequency} className="h-2" />
           <p className="text-xs text-indigo-600 mt-1">Frequency: {overallFrequency}%</p>
         </CardContent>
@@ -58,7 +58,7 @@ const OverallMetrics = ({ profile, energyCenters, chakraData }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-900 mb-1">{profile.overallBalance}%</div>
+          <div className="text-2xl font-bold text-green-900 mb-1" title="Indicates the harmony and equilibrium across your energy centers.">{profile.overallBalance}%</div>
           <Progress value={profile.overallBalance} className="h-2" />
           <p className="text-xs text-green-600 mt-1">Harmony Level</p>
         </CardContent>
@@ -73,7 +73,7 @@ const OverallMetrics = ({ profile, energyCenters, chakraData }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-orange-900 mb-1">{100 - overallBlockage}%</div>
+          <div className="text-2xl font-bold text-orange-900 mb-1" title="Shows how freely energy is flowing through your system, inversely related to blockage.">{100 - overallBlockage}%</div>
           <Progress value={100 - overallBlockage} className="h-2" />
           <p className="text-xs text-orange-600 mt-1">Free Flow Rate</p>
         </CardContent>
